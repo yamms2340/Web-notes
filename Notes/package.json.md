@@ -2,14 +2,8 @@
 
 `package.json` is the main configuration file of a Node.js project.
 
-It acts as a manifest that stores:
+It acts as a manifest that stores project <abbr title="Data about data (information that describes something)">metadata</abbr>, dependencies, scripts, version information, entry point, and license details.
 
-- project metadata
-- dependencies
-- scripts
-- version information
-- entry point
-- license details
 
 Without it:
 
