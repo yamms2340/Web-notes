@@ -1,4 +1,4 @@
-# Problems with Only `package.json`
+### Problems with Only `package.json`
 
 `package.json` stores dependency rules, not exact installed versions.
 
@@ -30,7 +30,7 @@ This can cause:
 
 ---
 
-# Another Problem
+### Another Problem
 
 Packages depend on other packages internally.
 
@@ -49,7 +49,9 @@ This makes installations non-reproducible.
 
 ---
 
-# Solution — `package-lock.json`
+### Solution — `package-lock.json`
+
+package-lock.json is automatically created by npm.
 
 `package-lock.json` stores:
 

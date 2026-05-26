@@ -1,14 +1,14 @@
 # Project Structure Basics
 
-Important files and folders commonly found in modern web projects.
+## `.env`
 
----
+A .env (short for environment) file is a simple text file used in software development to store sensitive data and configuration settings as key-value pairs
 
-# `.env`
+```env
+KEY=value
+```
+One variable per line.
 
-Stores environment variables.
-
-Example:
 
 ```env
 PORT=5000
@@ -16,35 +16,95 @@ DB_URL=mongodb://localhost:27017
 API_KEY=abc123
 ```
 
+### What is `process.env`?
+
+In Node, `process` is the running program. `process.env` is an object of environment variables.
+
+After loading `.env`, you read:
+
+```js
+process.env.PORT        // "5000" (string)
+```
+
+If a key is missing → `undefined`.
+
+
+### How `.env` gets loaded into `process.env` — `dotenv`
+
+`dotenv` is a Node.js package that loads variables from a `.env` file into `process.env`.
+
+Install:
+
+```bash
+npm install dotenv
+```
+In `server.js`:
+
+```js
+const dotenv = require('dotenv');
+
+dotenv.config();
+
+connectDB();
+```
 <details>
-<summary><strong>Why `.env` is used</strong></summary>
+<summary><strong>explnation</strong></summary>
 
-Sensitive values should not be hardcoded.
 
-Bad:
+If `connectDB()` runs before `dotenv.config()`, `process.env.MONGO_URI` may be `undefined`, causing the MongoDB connection to fail.
 
-```js
-const apiKey = "abc123";
-```
-
-Better:
+## `require('dotenv')`
 
 ```js
-const apiKey = process.env.API_KEY;
+const dotenv = require('dotenv');
 ```
 
-Used for:
+Imports the `dotenv` package into the project.
 
-- API keys
-- database URLs
-- secret tokens
-- environment-specific configuration
+## `dotenv.config()`
+
+```js
+dotenv.config();
+```
+
+`config()` is a function provided by `dotenv`.
+
+It:
+
+- reads the `.env` file
+- parses all variables
+- loads them into:
+
+```js
+process.env
+```
+
+## `connectDB()`
+
+```js
+connectDB();
+```
+
+Calls a function that connects the backend to MongoDB.
+
+Inside `connectDB()`:
+
+```js
+await mongoose.connect(process.env.MONGO_URI);
+```
+- `mongoose.connect(...)`
+  → connects to MongoDB
+
+- `process.env.MONGO_URI`
+  → gets the database URL from `.env`
+
+- `await`
+  → waits until the connection is completed
 
 </details>
 
 ---
-
-# `.gitignore`
+## `.gitignore`
 
 Tells Git which files/folders should not be tracked.
 
@@ -71,7 +131,7 @@ Some files should not be pushed to GitHub.
 
 ---
 
-# `node_modules/`
+## `node_modules/`
 
 Contains installed packages and their dependencies.
 
@@ -91,46 +151,39 @@ node_modules/
 └── ...
 ```
 
+
+
 <details>
-<summary><strong>Why `node_modules` becomes huge</strong></summary>
+<summary><strong>Why is node modules not pushed</strong></summary>
 
-Installing one package may internally install many dependent packages.
+- very large folder
+- contains thousand of generated files(cuz installing one package may internally install many dependent packages)
+- can be recreated anytime using:
 
-Example:
+Dependencies already exist in:
 
-```txt
-express
- ├── body-parser
- ├── cookie
- └── mime
+```json
+package.json
+package-lock.json
 ```
 
-Some dependencies may also have their own dependencies.
-
-This creates a dependency tree.
-
-</details>
-
-<details>
-<summary><strong>Why `node_modules` is not pushed to GitHub</strong></summary>
-
-`node_modules` can be recreated using:
+Anyone can restore `node_modules` using:
 
 ```bash
 npm install
 ```
 
-So projects usually ignore it using:
+Keeping `node_modules` out of Git:
 
-```gitignore
-node_modules
-```
+- keeps repo small
+- makes Git faster
+- avoids OS-specific conflicts
 
 </details>
 
 ---
 
-# `src/`
+## `src/`
 
 Main source code folder.
 
@@ -148,7 +201,7 @@ Application logic is usually written here.
 
 ---
 
-# `public/`
+## `public/`
 
 Stores static files.
 
@@ -171,7 +224,7 @@ Files inside `public` are served directly by the browser.
 
 ---
 
-# `dist/`
+## `dist/`
 
 Generated production build folder.
 
