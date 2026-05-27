@@ -186,7 +186,6 @@ Keeping `node_modules` out of Git:
 ## `src/`
 
 Main source code folder.
-
 Example:
 
 ```txt
