@@ -191,7 +191,7 @@ Example:
 ```txt
 src/
 ├── components/
-├── pages/
+├── pages/  
 ├── App.jsx
 └── main.jsx
 ```
