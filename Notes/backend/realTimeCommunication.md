@@ -17,7 +17,7 @@ Network Layer
 
 ---
 
-# IP (Internet Protocol)
+### IP (Internet Protocol)
 
 <details>
 <summary><strong>What is IP?</strong></summary>
@@ -46,9 +46,8 @@ It does NOT guarantee:
 
 </details>
 
----
 
-# TCP (Transmission Control Protocol)
+### TCP (Transmission Control Protocol)
 
 <details>
 <summary><strong>What is TCP?</strong></summary>
@@ -72,7 +71,6 @@ TCP is:
 
 </details>
 
----
 
 <details>
 <summary><strong>TCP 3-Way Handshake</strong></summary>
@@ -83,7 +81,7 @@ Client <-- SYN-ACK -- Server
 Client ---- ACK ----> Server
 ```
 
-## SYN
+### SYN
 
 ```text
 "Can we establish connection?"
@@ -91,7 +89,7 @@ Client ---- ACK ----> Server
 
 ---
 
-## SYN-ACK
+### SYN-ACK
 
 ```text
 "Yes, accepted."
@@ -99,7 +97,7 @@ Client ---- ACK ----> Server
 
 ---
 
-## ACK
+### ACK
 
 ```text
 "Connection confirmed."
@@ -112,40 +110,13 @@ After this:
 
 </details>
 
----
 
-# TCP vs UDP
-
-<details>
-<summary><strong>Comparison</strong></summary>
-
-| Feature    | TCP             | UDP               |
-| ---------- | --------------- | ----------------- |
-| Reliable   | Yes             | No                |
-| Ordered    | Yes             | No                |
-| Connection | Yes             | No                |
-| Speed      | Slower          | Faster            |
-| Used For   | HTTP, WebSocket | Streaming, gaming |
-
-</details>
-
----
-
-# HTTP (HyperText Transfer Protocol)
-
-<details>
-<summary><strong>What is HTTP?</strong></summary>
+## HTTP (HyperText Transfer Protocol)
 
 HTTP is an application-layer protocol used for communication between:
 
 * clients
 * servers
-
-HTTP powers:
-
-* websites
-* REST APIs
-* browsers
 
 HTTP runs over TCP.
 
@@ -157,14 +128,9 @@ TCP
 IP
 ```
 
-</details>
 
----
-
-<details>
-<summary><strong>HTTP Characteristics</strong></summary>
-
-## Stateless
+## HTTP Characteristics
+### Stateless
 
 Each request independent.
 
@@ -175,17 +141,16 @@ Request 2 -> unrelated
 
 ---
 
-## Unidirectional
+### Unidirectional
 
-Communication mainly initiated by client.
-
+The client starts the communication, and the server only responds. The server cannot independently push messages whenever it wants.
 ```text
 Client ---> Server
 ```
 
 ---
 
-## Half Duplex
+### Half Duplex
 
 One side communicates at a time.
 
@@ -194,9 +159,7 @@ Client sends request
 Server sends response
 ```
 
-</details>
 
----
 
 <details>
 <summary><strong>HTTP Request-Response Flow</strong></summary>
@@ -1165,47 +1128,5 @@ WebSocket:
 * bidirectional
 * full duplex
 
----
 
-## Difference between SSE and WebSocket?
 
-SSE:
-
-* server → client only
-* built on HTTP
-
-WebSocket:
-
-* full duplex
-* bidirectional protocol
-
----
-
-## Difference between WebSocket and Socket.IO?
-
-WebSocket is a protocol.
-
-Socket.IO is a library/framework built on top of WebSocket.
-
----
-
-## Does WebSocket replace TCP?
-
-No.
-
-WebSocket runs over TCP.
-
----
-
-## What is full duplex?
-
-Both sides communicate simultaneously.
-
----
-
-## Why use `wss://`?
-
-Secure encrypted WebSocket communication over TLS.
-
-</details>
-```
