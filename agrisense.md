@@ -1,40 +1,79 @@
-# 🌾 AgriSense: Comprehensive Interview Script & Deep Dive
+# 🌾 AgriSense: Master Project Details & Interview Guide
 
 ## 📑 Quick Links
-- [1. Project Overview & Problem Statement](#1-project-overview--problem-statement)
+- [1. Direct Interview Script (Start Here)](#1-direct-interview-script-start-here)
 - [2. System Architecture & Definitions](#2-system-architecture--definitions)
 - [3. Feature Workflows (Data Flow)](#3-feature-workflows-data-flow)
 - [4. Technology Stack Deep Dive](#4-technology-stack-deep-dive)
 - [5. Authentication & Security](#5-authentication--security)
 - [6. Development Challenges & Engineering Decisions](#6-development-challenges--engineering-decisions)
-- [7. Q&A (Performance & Security)](#7-qa)
+- [7. Q&A (Performance & Security)](#7-qa-performance--security)
 - [8. OTP Storage & Verification Implementations](#8-otp-storage--verification-implementations)
 - [9. The Proxy Pattern & Microservice Security](#9-the-proxy-pattern--microservice-security)
 - [10. NoSQL Data Modeling (Embedding vs Referencing)](#10-nosql-data-modeling-embedding-vs-referencing)
 - [11. Stateless Authentication (JWT vs Sessions)](#11-stateless-authentication-jwt-vs-sessions)
 - [12. Tech Stack Alternatives Dictionary](#12-tech-stack-alternatives-dictionary)
+- [13. Python Microservices: Flask vs FastAPI](#13-python-microservices-flask-vs-fastapi)
+- [14. Detailed Feature Breakdown & Endpoints](#14-detailed-feature-breakdown--endpoints)
+- [15. API Summary & Database Models](#15-api-summary--database-models)
+
 ---
 
-## 1. Project Overview & Problem Statement
+## 1. Direct Interview Script (Start Here)
 
-### What is AgriSense?
-AgriSense is an AI-powered agricultural decision support platform designed to help farmers make data-driven decisions throughout the farming lifecycle. It unifies Soil Intelligence, Crop Recommendation, Weather Intelligence, Risk Assessment, Market Intelligence, and Expense Management into a unified system.
 
-Rather than relying solely on traditional farming practices or delayed government advisories, AgriSense leverages machine learning models, environmental data, and market analytics to provide actionable recommendations that improve productivity and profitability.
+*This document is structured exactly how you should speak during an interview. Read it naturally!*
 
-### Problem Statement
-Agriculture is highly dependent on several unpredictable variables: soil quality and composition, weather conditions, crop diseases and risks, market price fluctuations, and expense management.
+---
 
-Farmers often lack access to real-time information required to make informed decisions regarding crop selection, selling strategy, and financial planning. AgriSense addresses this information gap by aggregating agricultural intelligence from multiple sources and transforming it into actionable insights.
+### 1.1 Introduction & Problem Statement (The Elevator Pitch)
 
-### Tech Stack
-* **Frontend:** React.js built with Vite.
-* **Backend Gateway:** Node.js + Express.js.
-* **ML Microservice:** Python + FastAPI.
-* **Database:** MongoDB + Mongoose (ODM).
-* **Machine Learning:** PyTorch (EfficientNet-B0) and Scikit-Learn (Random Forest).
-* **External APIs:** Open-Meteo (Weather), SoilGrids (Soil Data), Gov APIs (Market Prices).
-* **Security & Auth:** JWT (Stateless Auth), bcryptjs (Password Hashing), Brevo (OTP).
+**Interviewer:** "Tell me about your project, AgriSense."
+
+**You:** 
+"I built AgriSense, which is an AI-powered agricultural decision support platform. 
+
+Farmers often rely on manual knowledge and fragmented information sources, which can lead to poor crop choices and financial losses.
+
+To solve this, I built a unified dashboard that aggregates intelligence from multiple sources. 
+It provides machine-learning-based soil classification and crop recommendations, real-time weather forecasting, live market price tracking via government APIs, and a digitized expense management system."
+
+---
+
+### 1.2 Core Features Explanation
+
+**Interviewer:** "What are the main features and how do they work technically?"
+
+**You:**
+"The platform is divided into five core feature workflows:
+
+1.  **Soil Intelligence:** A farmer uploads a picture of their soil. The React frontend sends this image to my Python FastAPI microservice. The microservice runs a PyTorch EfficientNet-B0 deep learning model to classify the soil type and returns the metadata (like pH and water retention) back to the user.
+2.  **Crop Recommendation:** Based on the soil type and live environmental data (temperature, humidity, rainfall), the frontend queries a Scikit-Learn Random Forest model. It analyzes the tabular data and returns the most suitable, profitable crops to plant.
+3.  **Weather & Risk Assessment:** I integrated the Open-Meteo API to fetch real-time weather forecasts. My Node.js backend then acts as a rules engine, taking that forecast and computing agricultural risks (e.g., warning the farmer if high rainfall creates a flood risk).
+4.  **Market Intelligence (Best Mandi Finder):** To help farmers maximize profit, I integrated live market prices using data.gov.in. If that API fails, my Node.js backend uses a Cheerio web scraper as a fallback to scrape live HTML tables. It calculates the best nearby 'mandi' (market) based on the farmer's GPS location.
+5.  **Expense Management:** I built a digitized ledger where farmers can track their input costs (seeds, labor, fuel). Because agricultural expenses vary wildly in structure, I used MongoDB to store these dynamically as embedded NoSQL documents, allowing for instant, highly-performant dashboard retrieval."
+
+---
+
+### 1.3 Tech Stack Choices (The "Why")
+
+**Interviewer:** "Walk me through your tech stack. Why did you choose these specific technologies?"
+
+**You:**
+"I used a Service-Oriented Architecture, specifically separating my Node.js web traffic from my Python machine learning traffic.
+
+**1. Frontend: React.js**
+> "I chose React primarily for three reasons: First, its **State Management** automatically refreshes the UI whenever our weather or market data changes. Second, the **Virtual DOM** ensures that instead of reloading the whole screen, React only updates the exact sections that changed, making the dashboard highly responsive. Finally, its **Component Reusability** allowed me to build UI elements once—like a weather card or a chart—and reuse them anywhere across the platform, which drastically sped up development."
+
+**2. API Gateway: Node.js & Express**
+> "I chose Node.js with Express for three main reasons: First, its **Asynchronous Architecture** perfectly handles heavy I/O tasks. While it waits for slow external weather or market APIs to respond, it can process other farmers' requests without freezing. Second, it allowed for a **Unified JavaScript Stack**, meaning I didn't have to constantly switch contexts between frontend and backend languages. Finally, Express gave me an incredibly lightweight way to build a **Centralized API Gateway** to route and secure all incoming traffic."
+
+**3. Database: MongoDB**
+> "I selected MongoDB as my primary database for three key reasons: First, its **Flexible Schema** is perfect for agriculture. For example, in the Expense Tracker, a farmer might log seeds with a quantity, but labor as just a flat fee; MongoDB handles these varying documents effortlessly. Second, the ability to **Embed Documents** allowed me to store a user's entire expense ledger inside their profile, fetching their dashboard in one fast query instead of using slow SQL JOINs. Finally, it uses **JSON-like formats**, which integrates perfectly with my React and Node.js JavaScript stack."
+
+**4. Machine Learning Microservice: FastAPI (Python)**
+> "I built a dedicated Python microservice using FastAPI to host my machine learning models. FastAPI is a modern, ultra-fast web framework that provides native asynchronous execution and automatic data validation. Because machine learning inference (like PyTorch image classification) is extremely CPU-heavy, decoupling it into its own async FastAPI service ensured that heavy computations would never block the main Node.js web server. Additionally, it automatically generated Swagger documentation, which made integrating the APIs effortless."
+
 
 ---
 
@@ -625,3 +664,567 @@ I chose **FastAPI** because it perfectly fits this microservice architecture:
 1.  Its **native asynchronous nature** ensures that multiple heavy inference requests don't block each other. 
 2.  The **Pydantic data validation** guarantees my PyTorch models never crash due to malformed input data from the Node.js gateway. 
 3.  Because FastAPI **auto-generated the API documentation**, integrating my Node.js backend with the Python microservice was incredibly fast and seamless.
+
+
+---
+
+## 14. Detailed Feature Breakdown & Endpoints
+
+
+### 1. Soil Analysis
+
+**Purpose**: Analyze soil samples using ML image classification and GPS-based soil data.
+
+**Data Flow**:
+```
+Frontend (SoilAnalysis.jsx)
+  ↓ API.get("/reference/soil-database")
+Backend (reference.js)
+  ↓ Returns SOIL_DATABASE constant
+Frontend stores in state
+  ↓ User uploads soil photo
+  ↓ API.post("/ml/predict/soil", formData)
+Backend (ml.js → mlController.js)
+  ↓ Proxies to ML Service
+ML Service (soil.py)
+  ↓ EfficientNet-B0 model predicts soil type
+  ↓ Returns { soil_type, confidence }
+Frontend displays soil characteristics
+  ↓ User clicks GPS button
+  ↓ Fetch from ISRIC SoilGrids API (direct)
+Frontend displays GPS soil data
+```
+**Design Choice Clarification**: Image processing and tensor transformation are strictly offloaded to FastAPI. If we attempted image decoding in Node.js, it would block the single thread, causing all other users on the platform to experience lag.
+
+**API Endpoints**:
+- `GET /api/reference/soil-database` - Get soil database with characteristics
+- `POST /api/ml/predict/soil` - Predict soil type from image (requires auth)
+
+**Data Sources**:
+- Reference data: Backend static data (centralized in reference.js)
+- Soil type prediction: ML Service (EfficientNet-B0 model)
+- GPS soil data: ISRIC SoilGrids API (external)
+
+**Logic Type**: ML-based (EfficientNet-B0 for image classification)
+
+**Files**:
+- Frontend: `frontend/src/pages/SoilAnalysis.jsx`
+- Backend Route: `backend/routes/ml.js`
+- Backend Controller: `backend/controllers/mlController.js`
+- ML Service: `ml-service/routes/soil.py`
+- Reference Route: `backend/routes/reference.js`
+
+---
+
+### 2. Crop Recommendation
+
+**Purpose**: Recommend optimal crops based on soil type, NPK levels, and climate conditions.
+
+**Data Flow**:
+```
+Frontend (CropRecommend.jsx)
+  ↓ API.get("/reference/soil-presets")
+  ↓ API.get("/reference/crops")
+Backend (reference.js)
+  ↓ Returns SOIL_PRESETS and CROPS constants
+Frontend stores in state
+  ↓ User selects soil preset (auto-fills NPK)
+  ↓ User enters climate data
+  ↓ API.post("/ml/predict/crop", { soil_type, temperature, humidity, rainfall })
+Backend (ml.js → mlController.js)
+  ↓ Proxies to ML Service
+ML Service (crop.py)
+  ↓ Random Forest model predicts top 5 crops
+  ↓ Returns { soil_type, crops: [{ crop, score }] }
+Frontend maps ML results to crop data with financial estimates
+Frontend displays top 5 recommendations
+```
+
+**API Endpoints**:
+- `GET /api/reference/soil-presets` - Get soil NPK presets
+- `GET /api/reference/crops` - Get crop parameters
+- `POST /api/ml/predict/crop` - Predict crops using ML (requires auth)
+
+**Data Sources**:
+- Reference data: Backend static data (centralized in reference.js)
+- Crop prediction: ML Service (Random Forest model)
+
+**Logic Type**: ML-based (Random Forest for crop recommendation)
+
+**Files**:
+- Frontend: `frontend/src/pages/CropRecommend.jsx`
+- Backend Route: `backend/routes/ml.js`
+- Backend Controller: `backend/controllers/mlController.js`
+- ML Service: `ml-service/routes/crop.py`
+- Reference Route: `backend/routes/reference.js`
+
+---
+
+### 3. Weather Farm-Forecast
+
+**Purpose**: Provide weather forecasts, recent rainfall sums, and season calculations for agricultural planning.
+
+**Data Flow**:
+```
+Frontend (Dashboard.jsx)
+  ↓ User enters city or detects location
+  ↓ API.get("/weather/farm-forecast?lat=...&lon=...")
+Backend (weather.js)
+  ↓ Node.js calls Nominatim OpenStreetMap (Reverse Geocoding)
+  ↓ Node.js calls Open-Meteo for 7-day forecast AND 30-day history
+  ↓ Calculates historical 30-day precipitation sum
+  ↓ Determines farming season (Kharif, Zaid, Rabi)
+  ↓ Returns aggregated weather object
+Frontend displays weather data & rainfall sum
+```
+**Design Choice Clarification**: Performing reverse-geocoding, historical data aggregation, and season logic on the backend prevents exposing third-party API configurations to the client and keeps the React bundle lightweight.
+
+**API Endpoints**:
+- `GET /api/weather/farm-forecast` - Aggregated weather intelligence
+
+**Data Sources**:
+- Weather data: Open-Meteo API (proxied via Backend)
+- Geocoding: OpenStreetMap Nominatim (proxied via Backend)
+
+**Logic Type**: Backend API Aggregation & Mathematical Logic
+
+**Files**:
+- Frontend: `frontend/src/pages/Dashboard.jsx`
+- Backend Route: `backend/routes/weather.js`
+
+---
+
+### 4. Market Prices (Split Architecture)
+
+**Purpose**: Provide comprehensive market tools including finding the best mandi, checking live prices, and predicting future trends.
+
+**Data Flow**:
+```
+Best Mandi (BestMandi.jsx)
+  ↓ Background geocoding via Nominatim
+  ↓ API.post("/market/best-mandis")
+
+Live Prices (LivePricesDashboard.jsx)
+  ↓ Scrapes from Agmarknet / todaypricerates
+
+Price Forecast (PriceForecast.jsx)
+  ↓ Prophet ML Time-Series Prediction
+```
+
+**API Endpoints**:
+- `GET /api/market/commodity/:commodity` - Get market prices
+- `GET /api/market/commodities` - List available commodities
+- `POST /api/market/best-mandis` - Get best options
+- `POST /api/ml/predict/price` - Predict future prices
+
+**Data Sources**:
+- Price data: data.gov.in API, todaypricerates.com
+- Geocoding: OpenStreetMap Nominatim
+
+**Logic Type**: External API + Web Scraping + ML Prediction
+
+**Files**:
+- Frontend: `frontend/src/pages/BestMandi.jsx`, `frontend/src/pages/LivePricesDashboard.jsx`, `frontend/src/pages/PriceForecast.jsx`
+- Backend: `backend/routes/market.js`, `backend/controllers/marketController.js`
+
+---
+
+### 5. Risk Assessment
+
+**Purpose**: Assess agricultural risks (flood, drought, heat, frost) based on weather data.
+
+**Data Flow**:
+```
+Frontend (RiskAssessment.jsx)
+  ↓ User enters city or detects location
+  ↓ Fetch weather from Open-Meteo API (direct)
+  ↓ API.post("/reference/compute-risks", { current, forecast })
+Backend (reference.js)
+  ↓ computeRisks() - Rule-based logic
+  ↓ Returns risks with levels, descriptions, actions
+Frontend stores in state
+  ↓ API.post("/reference/safe-crops", { risks })
+Backend (reference.js)
+  ↓ getSafeCrops() - Rule-based logic
+  ↓ Returns safe crop recommendations
+Frontend displays risks and safe crops
+```
+
+**API Endpoints**:
+- `POST /api/reference/compute-risks` - Compute risks from weather data
+- `POST /api/reference/safe-crops` - Get safe crop recommendations based on risks
+
+**Data Sources**:
+- Weather data: Open-Meteo API (external)
+- Risk computation: Backend rule-based logic (centralized in reference.js)
+- Safe crops: Backend rule-based logic (centralized in reference.js)
+
+**Logic Type**: Rule-based (centralized in backend, can be replaced with ML)
+
+**Files**:
+- Frontend: `frontend/src/pages/RiskAssessment.jsx`
+- Reference Route: `backend/routes/reference.js`
+
+---
+
+### 6. Expense Tracker
+
+**Purpose**: Track agricultural expenses and forecast costs.
+
+**Data Flow**:
+```
+Frontend (ExpenseTracker.jsx)
+  ↓ useEffect on mount
+  ↓ API.get("/reference/expense-categories")
+  ↓ API.get("/reference/plan-crops")
+  ↓ API.get("/reference/seasons")
+Backend (reference.js)
+  ↓ Returns CATEGORIES, PLAN_CROPS, SEASONS constants
+Frontend stores in state
+  ↓ User adds expense
+  ↓ API.post("/expenses", { expense })
+Backend (expenses.js)
+  ↓ Creates expense record in MongoDB
+Frontend displays updated expenses
+  ↓ User saves forecast plan
+  ↓ API.post("/expenses/plan", { plan })
+Backend (expenses.js)
+  ↓ Updates plan in MongoDB
+Frontend displays forecast
+```
+**Design Choice Clarification**: We used MongoDB's embedded document paradigm. Instead of having separate SQL tables for "Users" and "Expenses", a user's entire expense ledger is stored as an array *inside* their singular User document. This guarantees rapid retrieval times for the `GET` route by avoiding JOINs.
+
+**API Endpoints**:
+- `GET /api/reference/expense-categories` - Get expense categories
+- `GET /api/reference/plan-crops` - Get plan crop options
+- `GET /api/reference/seasons` - Get season options
+- `GET /api/expenses` - Get expenses and plan
+- `POST /api/expenses` - Add expense
+- `POST /api/expenses/plan` - Save forecast plan
+
+**Data Sources**:
+- Reference data: Backend static data (centralized in reference.js)
+- Expense data: MongoDB (ExpenseRecord model)
+
+**Logic Type**: CRUD operations with MongoDB
+
+**Files**:
+- Frontend: `frontend/src/pages/ExpenseTracker.jsx`
+- Backend Route: `backend/routes/expenses.js`
+- Backend Model: `backend/models/ExpenseRecord.js`
+- Reference Route: `backend/routes/reference.js`
+
+---
+
+### 7. Input Advisor
+
+**Purpose**: Calculates exact seed and fertilizer (DAP, Urea, MOP) quantities required per hectare for a specific crop.
+
+**Data Flow**:
+```
+Frontend (InputAdvisor Component)
+  ↓ User selects crop and inputs land size (e.g., 2 hectares)
+  ↓ API.post("/inputAdvisor/recommend", { crop, area })
+Backend (inputAdvisor.js)
+  ↓ Controller cross-references static chemical constants for the crop
+  ↓ Multiplies base NPK/Seed requirements by land area
+  ↓ Returns calculated object
+Frontend displays precise chemical breakdown
+```
+
+**API Endpoints**:
+- `GET /api/inputAdvisor/crops` - Lists supported crops
+- `POST /api/inputAdvisor/recommend` - Calculates chemical requirements
+
+**Logic Type**: Backend mathematical calculations based on static agricultural data.
+
+**Files**:
+- Backend Route: `backend/routes/inputAdvisor.js`
+- Backend Controller: `backend/controllers/inputAdvisorController.js`
+
+---
+
+### 8. Pest Detection (Incomplete)
+
+**Purpose**: Detect pests from crop images using ML.
+
+**Status**: Incomplete - Feature exists but not fully implemented on the frontend.
+
+**Data Flow**:
+```
+Frontend (PestDetection.jsx)
+  ↓ User uploads pest photo
+  ↓ API.post("/pest/detect", formData)
+Backend (pest.js)
+  ↓ multer.memoryStorage() buffers image into RAM
+  ↓ Axios POST to FastAPI
+ML Service (pest.py)
+  ↓ Image classification
+```
+**Design Choice Clarification**: The backend route utilizes `multer.memoryStorage()` instead of `diskStorage()`. We keep the image binary in a temporary RAM buffer and immediately pipe it to Python. This ensures blazing-fast inference times and prevents polluting the Node.js server's hard drive with user images.
+
+**API Endpoints**:
+- `POST /api/pest/detect` - Upload and analyze image
+
+**Files**:
+- Frontend: `frontend/src/pages/PestDetection.jsx` (incomplete)
+- Backend Route: `backend/routes/pest.js`
+
+---
+
+
+
+---
+
+## 15. API Summary & Database Models
+## Reference Data API
+
+All static reference data is centralized in `backend/routes/reference.js`:
+
+### Endpoints
+- `GET /api/reference/expense-categories` - Expense Tracker categories
+- `GET /api/reference/plan-crops` - Expense Tracker crop options
+- `GET /api/reference/seasons` - Season options
+- `GET /api/reference/soil-database` - Soil Analysis soil characteristics
+- `GET /api/reference/soil-presets` - Crop Recommendation soil NPK presets
+- `GET /api/reference/crops` - Crop Recommendation crop parameters
+- `GET /api/reference/input-crop-requirements` - Input Advisor crop requirements
+- `POST /api/reference/safe-crops` - Risk Assessment safe crops
+- `POST /api/reference/compute-risks` - Risk Assessment risk computation
+
+### Data Types
+- **Static Constants**: All reference data is stored as constants in reference.js
+- **Future Improvement**: Can be moved to MongoDB for dynamic updates
+
+---
+
+## ML Service Endpoints
+
+The ML Service (FastAPI) provides the following endpoints:
+
+- `POST /predict/soil` - Soil type classification (EfficientNet-B0)
+- `POST /predict/crop` - Crop recommendation (Random Forest)
+- `POST /predict/price` - Price prediction (Linear Regression)
+- `GET /` - Health check
+
+### ML Models
+- **Soil Classification**: EfficientNet-B0 trained on soil images
+- **Crop Recommendation**: Random Forest trained on soil, climate data
+- **Price Prediction**: Linear Regression trained on historical price data
+
+---
+
+## Database Models
+
+### MongoDB Collections
+
+#### ExpenseRecord
+```javascript
+{
+  category: String,
+  amount: Number,
+  date: Date,
+  notes: String,
+  userId: ObjectId
+}
+```
+
+#### InputInventory
+```javascript
+{
+  inputName: String,
+  displayName: String,
+  sellerName: String,
+  location: String,
+  pricePerUnit: Number,
+  unit: String,
+  stockAvailable: Number,
+  contact: String
+}
+```
+
+#### User
+```javascript
+{
+  username: String,
+  email: String,
+  password: String,
+  role: String
+}
+```
+
+---
+
+## Environment Variables
+
+### Backend (.env)
+```
+PORT=5000
+MONGODB_URI=mongodb://localhost:27017/agrisense
+ML_SERVICE_URL=http://localhost:8000
+DATA_GOV_RESOURCE_ID=your_resource_id
+DATA_GOV_API_KEY=your_api_key
+JWT_SECRET=your_jwt_secret
+```
+
+### Frontend (.env)
+```
+VITE_API_URL=http://localhost:5000
+```
+
+### ML Service (.env)
+```
+No environment variables required
+```
+
+---
+
+## Recent Improvements
+
+### Static Data Migration
+All 5 features previously using static/hardcoded data have been migrated to use backend APIs:
+
+1. **Expense Tracker**: Categories, plan crops, seasons now fetched from `/api/reference/*`
+2. **Risk Assessment**: Risk computation and safe crops logic centralized in backend
+3. **Soil Analysis**: Soil database fetched from `/api/reference/soil-database`
+4. **Crop Recommendation**: Soil presets and crop data fetched from `/api/reference/*`
+
+### ML Integration
+1. **Crop Recommendation**: Now uses ML Service (Random Forest) instead of rule-based scoring
+2. **Risk Assessment**: Logic centralized in backend (still rule-based, ready for ML replacement)
+
+---
+
+## Future Improvements
+
+### Risk Assessment
+- Replace rule-based logic with ML model for risk prediction
+- Train model on historical weather data and crop outcomes
+
+### Pest Detection
+- Complete ML model integration for pest detection
+- Implement image upload and classification
+
+### Reference Data
+- Move all reference data to MongoDB for dynamic updates
+- Implement admin panel for reference data management
+
+---
+
+## File Structure
+
+```
+AgriSense/
+├── backend/
+│   ├── config/
+│   │   └── db.js
+│   ├── controllers/
+│   │   ├── mlController.js
+│   │   └── marketController.js
+│   ├── models/
+│   │   ├── ExpenseRecord.js
+│   │   ├── InputInventory.js
+│   │   └── User.js
+│   ├── routes/
+│   │   ├── auth.js
+│   │   ├── expenses.js
+│   │   ├── inputAdvisor.js
+│   │   ├── market.js
+│   │   ├── ml.js
+│   │   └── reference.js
+│   ├── server.js
+│   └── package.json
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   └── Navbar.jsx
+│   │   ├── pages/
+│   │   │   ├── Dashboard.jsx
++│   │   │  ├── ExpenseTracker.jsx
+│   │   │   ├── BestMandi.jsx
+│   │   │   ├── LivePricesDashboard.jsx
+│   │   │   ├── PriceForecast.jsx
+│   │   │   ├── RiskAssessment.jsx
+│   │   │   ├── SoilAnalysis.jsx
+│   │   │   ├── CropRecommend.jsx
+│   │   │   └── PestDetection.jsx
+│   │   ├── services/
+│   │   │   └── api.js
+│   │   └── App.jsx
+│   └── package.json
+├── ml-service/
+│   ├── models/
+│   │   ├── crop_model.pkl
+│   │   ├── label_encoder.pkl
+│   │   └── soil_model.pkl
+│   ├── routes/
+│   │   ├── crop.py
+│   │   ├── price.py
+│   │   └── soil.py
+│   ├── data/
+│   │   └── soil_npk.json
+│   └── main.py
+├── PROJECT_DETAILS.md
+└── README.md
+```
+
+---
+
+## API Summary
+
+### Reference API
+- `GET /api/reference/expense-categories`
+- `GET /api/reference/plan-crops`
+- `GET /api/reference/seasons`
+- `GET /api/reference/soil-database`
+- `GET /api/reference/soil-presets`
+- `GET /api/reference/crops`
+- `GET /api/reference/input-crop-requirements`
+- `POST /api/reference/safe-crops`
+- `POST /api/reference/compute-risks`
+
+### ML API (requires auth)
+- `GET /api/ml/health`
+- `POST /api/ml/predict/soil`
+- `POST /api/ml/predict/crop`
+- `POST /api/ml/predict/price`
+
+### Expense API (requires auth)
+- `GET /api/expenses`
+- `POST /api/expenses`
+- `POST /api/expenses/plan`
+
+### Market API
+- `GET /api/market/commodities`
+- `GET /api/market/commodity/:commodity`
+
+### Input Advisor API (requires auth)
+- `GET /api/inputAdvisor/crops`
+- `POST /api/inputAdvisor/recommend`
+
+### Auth API
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+
+---
+
+## Status Summary
+
+| Feature | Data Source | Logic Type | Status |
+|---------|-------------|------------|--------|
+| Soil Analysis | Backend API + ML Service | ML-based | ✅ Complete |
+| Crop Recommendation | Backend API + ML Service | ML-based | ✅ Complete |
+| Weather Forecast | Backend API + External | API Aggregation | ✅ Complete |
+| Best Mandi | External APIs | Geocoding | ✅ Complete |
+| Live Prices | External APIs | API + Scraping | ✅ Complete |
+| Price Forecast | ML Service | Prophet Model | ✅ Complete |
+| Risk Assessment | Backend API | Rule-based (centralized) | ✅ Complete |
+| Expense Tracker | Backend API + MongoDB | CRUD | ✅ Complete |
+| Input Advisor | Backend API | Mathematical Logic | ✅ Complete |
+| Pest Detection | - | - | ⏳ Incomplete |
+
+---
+
+## Last Updated
+June 25, 2026
+
