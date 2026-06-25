@@ -112,3 +112,4 @@ The platform is divided into seven major functional components:
 
 **5. AI Models: Gemini & Groq APIs**
 > "I integrated these specific LLMs to power the **AI Assistance Layer**. Groq, in particular, provides ultra-low latency inference. This is crucial because if a child asks for a hint during a game, the response must be instantaneous to maintain their engagement and prevent cognitive frustration."
+
